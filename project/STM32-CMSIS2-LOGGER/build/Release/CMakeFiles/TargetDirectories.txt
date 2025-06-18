@@ -1,0 +1,7 @@
+/home/knap-linux/Documents/git/STM32-CMSIS2-LOGGER/project/STM32-CMSIS2-LOGGER/build/Release/CMakeFiles/STM32-CMSIS2-LOGGER.dir
+/home/knap-linux/Documents/git/STM32-CMSIS2-LOGGER/project/STM32-CMSIS2-LOGGER/build/Release/CMakeFiles/edit_cache.dir
+/home/knap-linux/Documents/git/STM32-CMSIS2-LOGGER/project/STM32-CMSIS2-LOGGER/build/Release/CMakeFiles/rebuild_cache.dir
+/home/knap-linux/Documents/git/STM32-CMSIS2-LOGGER/project/STM32-CMSIS2-LOGGER/build/Release/cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir
+/home/knap-linux/Documents/git/STM32-CMSIS2-LOGGER/project/STM32-CMSIS2-LOGGER/build/Release/cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir
+/home/knap-linux/Documents/git/STM32-CMSIS2-LOGGER/project/STM32-CMSIS2-LOGGER/build/Release/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
+/home/knap-linux/Documents/git/STM32-CMSIS2-LOGGER/project/STM32-CMSIS2-LOGGER/build/Release/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir
