@@ -155,7 +155,7 @@ void startLoggerTask(void *argument);
 int _write(int file, char *ptr, int len)
 {
 	(void)file;
-	if (HAL_UART_Transmit(&huart3, (uint8_t*)ptr, len, 100) != HAL_OK)
+	if (HAL_UART_Transmit(&huart3, (uint8_t *)ptr, len, 100) != HAL_OK)
 	{
 		return -1;
 	}

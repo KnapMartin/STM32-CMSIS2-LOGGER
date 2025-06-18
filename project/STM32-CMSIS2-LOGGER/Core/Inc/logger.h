@@ -13,19 +13,19 @@ extern "C" {
 #include <string.h>
 
 #define LOG_MSG_MAX_LEN 128
-#define LOG_TIMESTAMP 1
+#define LOG_TIMESTAMP 0
 
 typedef enum
 {
     LOG_TYPE_INFO,
     LOG_TYPE_WARNING,
     LOG_TYPE_ERROR
-} LogMessageType;
+} LogType;
 
 typedef struct
 {
     char message[LOG_MSG_MAX_LEN];
-    LogMessageType type;
+    LogType type;
 #if LOG_TIMESTAMP
     uint32_t timestamp_ms;
 #endif

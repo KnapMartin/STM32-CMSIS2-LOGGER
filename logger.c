@@ -5,6 +5,8 @@ static uint8_t s_init = 0;
 static char s_formatted[LOG_MSG_MAX_LEN + 32];
 static volatile uint8_t s_running = 1;
 
+static void LOG_generic(LogType type, const char *format, va_list args);
+
 __attribute__((weak)) void LOG_uart_write(const char *buffer)
 {
     printf("%s", buffer);
@@ -16,74 +18,44 @@ void LOG_init(osMessageQueueId_t *queueHandle)
     s_init = 1;
 }
 
-void LOG_INFO(const char *format, ...)
+static void LOG_generic(LogType type, const char *format, va_list args)
 {
     if (!s_init)
         return;
 
     LogMessage logMessage;
-    va_list args;
 #if LOG_TIMESTAMP
     logMessage.timestamp_ms = osKernelGetTickCount();
 #endif
-    va_start(args, format);
     vsnprintf(logMessage.message, LOG_MSG_MAX_LEN, format, args);
-    va_end(args);
-
-    logMessage.type = LOG_TYPE_INFO;
+    logMessage.type = type;
 
     osStatus_t status = osMessageQueuePut(*s_queueHandle, &logMessage, 0, 0);
-    if (status != osOK)
-    {
-        // Handle error if needed, e.g., log to a different output or ignore
-        // For now, we do nothing
-    }
+    (void)status; // Optionally handle error
+}
+
+void LOG_INFO(const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    LOG_generic(LOG_TYPE_INFO, format, args);
+    va_end(args);
 }
 
 void LOG_WRN(const char *format, ...)
 {
-    if (!s_init)
-        return;
-
-    LogMessage logMessage;
     va_list args;
-#if LOG_TIMESTAMP
-    logMessage.timestamp_ms = osKernelGetTickCount();
-#endif
     va_start(args, format);
-    vsnprintf(logMessage.message, LOG_MSG_MAX_LEN, format, args);
+    LOG_generic(LOG_TYPE_WARNING, format, args);
     va_end(args);
-
-    logMessage.type = LOG_TYPE_WARNING;
-
-    osStatus_t status = osMessageQueuePut(*s_queueHandle, &logMessage, 0, 0);
-    if (status != osOK)
-    {
-        ;
-    }
 }
 
 void LOG_ERR(const char *format, ...)
 {
-    if (!s_init)
-        return;
-
-    LogMessage logMessage;
     va_list args;
-#if LOG_TIMESTAMP
-    logMessage.timestamp_ms = osKernelGetTickCount();
-#endif
     va_start(args, format);
-    vsnprintf(logMessage.message, LOG_MSG_MAX_LEN, format, args);
+    LOG_generic(LOG_TYPE_ERROR, format, args);
     va_end(args);
-
-    logMessage.type = LOG_TYPE_ERROR;
-
-    osStatus_t status = osMessageQueuePut(*s_queueHandle, &logMessage, 0, 0);
-    if (status != osOK)
-    {
-        ;
-    }
 }
 
 void LOG_task()
@@ -102,13 +74,13 @@ void LOG_task()
 
             snprintf(s_formatted, sizeof(s_formatted), "[%lu] [%s] %s\r\n", logMessage.timestamp_ms,
                      (logMessage.type == LOG_TYPE_INFO) ? "INFO" :
-                     (logMessage.type == LOG_TYPE_WARNING) ? "\033[38;5;208mWARNING\033[0m" :
+                     (logMessage.type == LOG_TYPE_WARNING) ? "\033[93mWARNING\033[0m" :
                      (logMessage.type == LOG_TYPE_ERROR) ? "\033[31mERROR\033[0m" : "",
                      logMessage.message);
 #else
             snprintf(s_formatted, sizeof(s_formatted), "[%s] %s\r\n",
                      (logMessage.type == LOG_TYPE_INFO) ? "INFO" :
-                     (logMessage.type == LOG_TYPE_WARNING) ? "\033[38;5;208mWARNING\033[0m" :
+                     (logMessage.type == LOG_TYPE_WARNING) ? "\033[93mWARNING\033[0m" :
                      (logMessage.type == LOG_TYPE_ERROR) ? "\033[31mERROR\033[0m" : "",
                      logMessage.message);
 #endif
