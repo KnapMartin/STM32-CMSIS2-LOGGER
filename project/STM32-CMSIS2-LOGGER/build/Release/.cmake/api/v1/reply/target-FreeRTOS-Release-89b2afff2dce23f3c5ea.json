@@ -53,19 +53,19 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 94,
+				"line" : 111,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 96,
+				"line" : 113,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 95,
+				"line" : 112,
 				"parent" : 0
 			}
 		]
@@ -84,6 +84,10 @@
 				{
 					"backtrace" : 2,
 					"define" : "STM32G474xx"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "USE_FULL_LL_DRIVER"
 				},
 				{
 					"backtrace" : 2,

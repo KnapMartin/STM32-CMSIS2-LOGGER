@@ -10,18 +10,35 @@ extern "C" {
 #include <stddef.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
 #define LOG_MSG_MAX_LEN 128
+#define LOG_TIMESTAMP 1
+
+typedef enum
+{
+    LOG_TYPE_INFO,
+    LOG_TYPE_WARNING,
+    LOG_TYPE_ERROR
+} LogMessageType;
 
 typedef struct
 {
     char message[LOG_MSG_MAX_LEN];
+    LogMessageType type;
+#if LOG_TIMESTAMP
+    uint32_t timestamp_ms;
+#endif
 } LogMessage;
+
+
 
 
 __attribute__((weak)) void LOG_uart_write(const char* buffer);
 void LOG_init(osMessageQueueId_t *queueHandle);
-void LOG_write(const char* format, ...);
+void LOG_INFO(const char* format, ...);
+void LOG_WRN(const char* format, ...);
+void LOG_ERR(const char* format, ...);
 void LOG_task();
 
 #ifdef __cplusplus

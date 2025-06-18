@@ -62,21 +62,21 @@
 				{
 					"directoryIndex" : 1,
 					"id" : "FreeRTOS::@768a070a0fe75716b479",
-					"jsonFile" : "target-FreeRTOS-Release-7d65a03050d7cb42a3d8.json",
+					"jsonFile" : "target-FreeRTOS-Release-89b2afff2dce23f3c5ea.json",
 					"name" : "FreeRTOS",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "STM32-CMSIS2-LOGGER::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-STM32-CMSIS2-LOGGER-Release-5d3efb0601ddbb73214f.json",
+					"jsonFile" : "target-STM32-CMSIS2-LOGGER-Release-560f0759d10a253e4ea8.json",
 					"name" : "STM32-CMSIS2-LOGGER",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "STM32_Drivers::@768a070a0fe75716b479",
-					"jsonFile" : "target-STM32_Drivers-Release-8630a74f1f2a82a7ad90.json",
+					"jsonFile" : "target-STM32_Drivers-Release-15f272dec8a1418647cf.json",
 					"name" : "STM32_Drivers",
 					"projectIndex" : 0
 				}
