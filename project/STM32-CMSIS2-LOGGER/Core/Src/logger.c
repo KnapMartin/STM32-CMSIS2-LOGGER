@@ -25,7 +25,7 @@ void LOG_write(const char* format, ...)
     vsnprintf(logMessage.message, LOG_MSG_MAX_LEN, format, args);
     va_end(args);
 
-    osMessageQueuePut(*s_queueHandle, &logMessage, 0, 0);
+    osMessageQueuePut(*s_queueHandle, &logMessage, 0, 0); // TODO: error handling
 }
 
 void LOG_task()

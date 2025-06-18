@@ -30,6 +30,7 @@
 /* Private typedef -----------------------------------------------------------*/
 typedef StaticTask_t osStaticThreadDef_t;
 typedef StaticQueue_t osStaticMessageQDef_t;
+typedef StaticSemaphore_t osStaticMutexDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -105,6 +106,14 @@ const osMessageQueueAttr_t queueLogger_attributes = {
 	.cb_size = sizeof(queueLoggerControlBlock),
 	.mq_mem = &queueLoggerBuffer,
 	.mq_size = sizeof(queueLoggerBuffer)};
+/* Definitions for ledMutex */
+osMutexId_t ledMutexHandle;
+osStaticMutexDef_t ledMutexControlBlock;
+const osMutexAttr_t ledMutex_attributes = {
+	.name = "ledMutex",
+	.cb_mem = &ledMutexControlBlock,
+	.cb_size = sizeof(ledMutexControlBlock),
+};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -163,6 +172,9 @@ int main(void)
 
 	/* Init scheduler */
 	osKernelInitialize();
+	/* Create the mutex(es) */
+	/* creation of ledMutex */
+	ledMutexHandle = osMutexNew(&ledMutex_attributes);
 
 	/* USER CODE BEGIN RTOS_MUTEX */
 	/* add mutexes, ... */
@@ -370,10 +382,14 @@ static void MX_GPIO_Init(void)
 void startTask0(void *argument)
 {
 	/* USER CODE BEGIN 5 */
+
+	UNUSED(argument);
+	osDelay(500);
 	/* Infinite loop */
 	for (;;)
 	{
-		osDelay(1);
+		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
+		osDelay(1000);
 	}
 	/* USER CODE END 5 */
 }
@@ -388,13 +404,16 @@ void startTask0(void *argument)
 void startTask1(void *argument)
 {
 	/* USER CODE BEGIN startTask1 */
-	/* Infinite loop */
+
+	UNUSED(argument);
 	for (;;)
 	{
-		osDelay(1);
+		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
+		osDelay(1000);
 	}
-	/* USER CODE END startTask1 */
 }
+/* USER CODE END startTask1 */
+
 
 /* USER CODE BEGIN Header_startTask2 */
 /**
@@ -406,10 +425,12 @@ void startTask1(void *argument)
 void startTask2(void *argument)
 {
 	/* USER CODE BEGIN startTask2 */
+	UNUSED(argument);
 	/* Infinite loop */
 	for (;;)
 	{
-		osDelay(1);
+		osDelay(300);
+		HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
 	}
 	/* USER CODE END startTask2 */
 }
@@ -424,6 +445,7 @@ void startTask2(void *argument)
 void startLoggerTask(void *argument)
 {
 	/* USER CODE BEGIN startLoggerTask */
+	UNUSED(argument);
 	/* Infinite loop */
 	for (;;)
 	{
