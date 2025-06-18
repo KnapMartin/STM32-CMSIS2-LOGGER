@@ -31,7 +31,16 @@ static void LOG_generic(LogType type, const char *format, va_list args)
     logMessage.type = type;
 
     osStatus_t status = osMessageQueuePut(*s_queueHandle, &logMessage, 0, 0);
-    (void)status; // Optionally handle error
+    if (status == osErrorResource) // Queue full
+    {
+        // Drop the oldest message
+        LogMessage dummy;
+        osMessageQueueGet(*s_queueHandle, &dummy, NULL, 0);
+        (void)dummy; // Suppress unused variable warning
+        // Try again to put the new message
+        osMessageQueuePut(*s_queueHandle, &logMessage, 0, 0);
+        // TODO: maybe print a warning here
+    }
 }
 
 void LOG_INFO(const char *format, ...)
@@ -70,8 +79,6 @@ void LOG_task()
         if (status == osOK)
         {
 #if LOG_TIMESTAMP
-            // snprintf(s_formatted, sizeof(s_formatted), "[%lu ms] %s\r\n", logMessage.timestamp_ms, logMessage.message);
-
             snprintf(s_formatted, sizeof(s_formatted), "[%lu] [%s] %s\r\n", logMessage.timestamp_ms,
                      (logMessage.type == LOG_TYPE_INFO) ? "INFO" :
                      (logMessage.type == LOG_TYPE_WARNING) ? "\033[93mWARNING\033[0m" :

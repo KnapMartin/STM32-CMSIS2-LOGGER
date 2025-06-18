@@ -13,7 +13,7 @@ extern "C" {
 #include <string.h>
 
 #define LOG_MSG_MAX_LEN 128
-#define LOG_TIMESTAMP 0
+#define LOG_TIMESTAMP 1
 
 typedef enum
 {
@@ -30,8 +30,6 @@ typedef struct
     uint32_t timestamp_ms;
 #endif
 } LogMessage;
-
-
 
 
 __attribute__((weak)) void LOG_uart_write(const char* buffer);
