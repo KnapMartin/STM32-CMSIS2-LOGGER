@@ -4,10 +4,11 @@ static osMessageQueueId_t *s_queueHandle;
 static uint8_t s_init = 0;
 static char s_formatted[LOG_MSG_MAX_LEN + 32];
 static volatile uint8_t s_running = 1;
+static LogMessage s_discardedMessage;
 
 static void LOG_generic(LogType type, const char *format, va_list args);
 
-__attribute__((weak)) void LOG_uart_write(const char *buffer)
+__attribute__((weak)) void LOG_write(const char *buffer)
 {
     printf("%s", buffer);
 }
@@ -33,13 +34,16 @@ static void LOG_generic(LogType type, const char *format, va_list args)
     osStatus_t status = osMessageQueuePut(*s_queueHandle, &logMessage, 0, 0);
     if (status == osErrorResource) // Queue full
     {
-        // Drop the oldest message
-        LogMessage dummy;
-        osMessageQueueGet(*s_queueHandle, &dummy, NULL, 0);
-        (void)dummy; // Suppress unused variable warning
-        // Try again to put the new message
-        osMessageQueuePut(*s_queueHandle, &logMessage, 0, 0);
-        // TODO: maybe print a warning here
+        osStatus_t status = osMessageQueueGet(s_queueHandle, &s_discardedMessage, NULL, 0);
+        if (status == osOK)
+        {
+            // Successfully removed oldest message
+            osMessageQueuePut(s_queueHandle, &logMessage, 0, 0);
+        }
+        // else
+        // {
+        //     // Handle error (optional)
+        // }
     }
 }
 
@@ -80,20 +84,20 @@ void LOG_task()
         {
 #if LOG_TIMESTAMP
             snprintf(s_formatted, sizeof(s_formatted), "[%lu] [%s] %s\r\n", logMessage.timestamp_ms,
-                     (logMessage.type == LOG_TYPE_INFO) ? "INFO" :
-                     (logMessage.type == LOG_TYPE_WARNING) ? "\033[93mWARNING\033[0m" :
-                     (logMessage.type == LOG_TYPE_ERROR) ? "\033[31mERROR\033[0m" : "",
+                     (logMessage.type == LOG_TYPE_INFO) ? "INFO" : (logMessage.type == LOG_TYPE_WARNING) ? "\033[93mWARNING\033[0m"
+                                                               : (logMessage.type == LOG_TYPE_ERROR)     ? "\033[31mERROR\033[0m"
+                                                                                                         : "",
                      logMessage.message);
 #else
             snprintf(s_formatted, sizeof(s_formatted), "[%s] %s\r\n",
-                     (logMessage.type == LOG_TYPE_INFO) ? "INFO" :
-                     (logMessage.type == LOG_TYPE_WARNING) ? "\033[93mWARNING\033[0m" :
-                     (logMessage.type == LOG_TYPE_ERROR) ? "\033[31mERROR\033[0m" : "",
+                     (logMessage.type == LOG_TYPE_INFO) ? "INFO" : (logMessage.type == LOG_TYPE_WARNING) ? "\033[93mWARNING\033[0m"
+                                                               : (logMessage.type == LOG_TYPE_ERROR)     ? "\033[31mERROR\033[0m"
+                                                                                                         : "",
                      logMessage.message);
 #endif
             s_formatted[sizeof(s_formatted) - 1] = '\0'; // Ensure null termination
             // Write to UART or other output
-            LOG_uart_write(s_formatted);
+            LOG_write(s_formatted);
         }
         else if (status == osErrorTimeout)
         {

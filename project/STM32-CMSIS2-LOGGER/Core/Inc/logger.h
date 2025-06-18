@@ -32,7 +32,7 @@ typedef struct
 } LogMessage;
 
 
-__attribute__((weak)) void LOG_uart_write(const char* buffer);
+__attribute__((weak)) void LOG_write(const char* buffer);
 void LOG_init(osMessageQueueId_t *queueHandle);
 void LOG_INFO(const char* format, ...);
 void LOG_WRN(const char* format, ...);

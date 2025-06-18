@@ -101,7 +101,7 @@ const osThreadAttr_t task2_attributes = {
 };
 /* Definitions for loggerTask */
 osThreadId_t loggerTaskHandle;
-uint32_t loggerTaskBuffer[512];
+uint32_t loggerTaskBuffer[256];
 osStaticThreadDef_t loggerTaskControlBlock;
 const osThreadAttr_t loggerTask_attributes = {
 	.name = "loggerTask",
