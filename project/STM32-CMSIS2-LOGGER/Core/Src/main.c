@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 
 #include "logger.h"
+#include <stdio.h>
 
 /* USER CODE END Includes */
 
@@ -116,6 +117,17 @@ const osMutexAttr_t ledMutex_attributes = {
 };
 /* USER CODE BEGIN PV */
 
+int _write(int file, char *ptr, int len)
+{
+	UNUSED(file);
+	if (HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, 100) != HAL_OK)
+	{
+		return -1;
+	}
+
+  	return len;
+}
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -167,6 +179,8 @@ int main(void)
 	MX_GPIO_Init();
 	MX_USART2_UART_Init();
 	/* USER CODE BEGIN 2 */
+
+	LOG_init(&queueLoggerHandle);
 
 	/* USER CODE END 2 */
 
@@ -389,6 +403,7 @@ void startTask0(void *argument)
 	for (;;)
 	{
 		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
+		LOG_write("pin set\r\n");
 		osDelay(1000);
 	}
 	/* USER CODE END 5 */
@@ -409,6 +424,7 @@ void startTask1(void *argument)
 	for (;;)
 	{
 		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
+		LOG_write("pin reset\r\n");
 		osDelay(1000);
 	}
 }
@@ -431,6 +447,7 @@ void startTask2(void *argument)
 	{
 		osDelay(300);
 		HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+		LOG_write("pin toggle\r\n");
 	}
 	/* USER CODE END startTask2 */
 }
@@ -449,7 +466,7 @@ void startLoggerTask(void *argument)
 	/* Infinite loop */
 	for (;;)
 	{
-		osDelay(1);
+		LOG_task();
 	}
 	/* USER CODE END startLoggerTask */
 }
