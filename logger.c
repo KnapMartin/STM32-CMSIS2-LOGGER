@@ -34,16 +34,12 @@ static void LOG_generic(LogType type, const char *format, va_list args)
     osStatus_t status = osMessageQueuePut(*s_queueHandle, &logMessage, 0, 0);
     if (status == osErrorResource) // Queue full
     {
-        osStatus_t status = osMessageQueueGet(s_queueHandle, &s_discardedMessage, NULL, 0);
+        osStatus_t status = osMessageQueueGet(*s_queueHandle, &s_discardedMessage, NULL, 0);
         if (status == osOK)
         {
             // Successfully removed oldest message
-            osMessageQueuePut(s_queueHandle, &logMessage, 0, 0);
+            osMessageQueuePut(*s_queueHandle, &logMessage, 0, 0);
         }
-        // else
-        // {
-        //     // Handle error (optional)
-        // }
     }
 }
 
@@ -79,19 +75,19 @@ void LOG_task()
     LogMessage logMessage;
     while (s_running)
     {
-        osStatus_t status = osMessageQueueGet(*s_queueHandle, &logMessage, NULL, 10); // 10 ms timeout
+        osStatus_t status = osMessageQueueGet(*s_queueHandle, &logMessage, NULL, LOG_QUEUE_GET_TIMEOUT);
         if (status == osOK)
         {
 #if LOG_TIMESTAMP
             snprintf(s_formatted, sizeof(s_formatted), "[%lu] [%s] %s\r\n", logMessage.timestamp_ms,
-                     (logMessage.type == LOG_TYPE_INFO) ? "INFO" : (logMessage.type == LOG_TYPE_WARNING) ? "\033[93mWARNING\033[0m"
-                                                               : (logMessage.type == LOG_TYPE_ERROR)     ? "\033[31mERROR\033[0m"
+                     (logMessage.type == LOG_TYPE_INFO) ? "INFO" : (logMessage.type == LOG_TYPE_WARNING) ? "\033[93mWARN\033[0m"
+                                                               : (logMessage.type == LOG_TYPE_ERROR)     ? "\033[31mERRO\033[0m"
                                                                                                          : "",
                      logMessage.message);
 #else
             snprintf(s_formatted, sizeof(s_formatted), "[%s] %s\r\n",
-                     (logMessage.type == LOG_TYPE_INFO) ? "INFO" : (logMessage.type == LOG_TYPE_WARNING) ? "\033[93mWARNING\033[0m"
-                                                               : (logMessage.type == LOG_TYPE_ERROR)     ? "\033[31mERROR\033[0m"
+                     (logMessage.type == LOG_TYPE_INFO) ? "INFO" : (logMessage.type == LOG_TYPE_WARNING) ? "\033[93mWARN\033[0m"
+                                                               : (logMessage.type == LOG_TYPE_ERROR)     ? "\033[31mERRO\033[0m"
                                                                                                          : "",
                      logMessage.message);
 #endif
