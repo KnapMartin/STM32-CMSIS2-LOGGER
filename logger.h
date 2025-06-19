@@ -14,6 +14,7 @@ extern "C" {
 
 #define LOG_MSG_MAX_LEN 128
 #define LOG_TIMESTAMP 1
+#define LOG_QUEUE_GET_TIMEOUT 100 // ms
 
 typedef enum
 {
